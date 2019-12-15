@@ -59,7 +59,6 @@ class Day7 {
 				bestCombi = c;
 			}
 		}
-		trace(bestCombi);
 		return max;
 	}
 
@@ -83,12 +82,10 @@ class Day7 {
 				}
 			}
 			if (output > max) {
-				trace(output);
 				max = output;
 				bestCombi = c;
 			}
 		}
-		trace(bestCombi);
 		return max;
 	}
 }
