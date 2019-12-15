@@ -33,6 +33,9 @@ class IntCodeMachine {
 
 	public function new(memory:Array<Float>, input:Array<Int> = null) {
 		this.memory = memory;
+		if (input == null) {
+			trace('warning check input defaulting to [0]');
+		}
 		this.input = input == null ? [0] : input;
 	}
 
