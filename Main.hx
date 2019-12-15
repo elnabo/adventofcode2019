@@ -11,5 +11,6 @@ class Main {
 		// days.Day7.run();
 		// days.Day8.run();
 		days.Day9.run();
+		days.Day10.run();
 	}
 }
