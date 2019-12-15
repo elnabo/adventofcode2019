@@ -19,14 +19,14 @@ class Day5 {
 
 	static function part1() {
 		var data = getData();
-		var machine = new IntCodeMachine(data, 1);
+		var machine = new IntCodeMachine(data, [1]);
 		machine.run();
 		return machine.output[machine.output.length - 1];
 	}
 
 	static function part2() {
 		var data = getData();
-		var machine = new IntCodeMachine(data, 5);
+		var machine = new IntCodeMachine(data, [5]);
 		machine.run();
 		return machine.output[machine.output.length - 1];
 	}

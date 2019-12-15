@@ -8,5 +8,6 @@ class Main {
 		days.Day4.run();
 		days.Day5.run();
 		days.Day6.run();
+		days.Day7.run();
 	}
 }

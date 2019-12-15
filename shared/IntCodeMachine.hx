@@ -22,15 +22,15 @@ enum Code {
 
 class IntCodeMachine {
 	final memory:Array<Int>;
-	final input:Int;
 	var pc:Int = 0;
 	var stopped = false;
 
+	public final input:Array<Int>;
 	public var output = [];
 
-	public function new(memory:Array<Int>, input:Int = 0) {
+	public function new(memory:Array<Int>, input:Array<Int> = null) {
 		this.memory = memory;
-		this.input = input;
+		this.input = input == null ? [0] : input;
 	}
 
 	function nextOpCode():OpCode {
@@ -105,6 +105,14 @@ class IntCodeMachine {
 		}
 	}
 
+	public function waitOutput() {
+		var length = output.length;
+		while (!stopped && output.length == length) {
+			step();
+		}
+		return output.length > length ? output[length] : null;
+	}
+
 	public function step() {
 		if (stopped) {
 			return;
@@ -124,7 +132,7 @@ class IntCodeMachine {
 				write(a * b, c);
 			case Input:
 				final a = next();
-				write(input, a);
+				write(input.shift(), a);
 			case Output:
 				final a = get(next(), opcode.modes[0]);
 				out(a);
