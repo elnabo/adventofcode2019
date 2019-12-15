@@ -5,6 +5,7 @@ typedef OpCode = {code:Code, modes:Array<Mode>};
 enum abstract Mode(Int) from Int to Int {
 	var Position = 0;
 	var Immediate = 1;
+	var Relative = 2;
 }
 
 enum Code {
@@ -16,19 +17,21 @@ enum Code {
 	JumpIfFalse;
 	LessThan;
 	Equals;
+	RBase;
 	Halt;
 	Invalid;
 }
 
 class IntCodeMachine {
-	final memory:Array<Int>;
+	final memory:Array<Float>;
 	var pc:Int = 0;
 	var stopped = false;
+	var relative = 0.0;
 
 	public final input:Array<Int>;
 	public var output = [];
 
-	public function new(memory:Array<Int>, input:Array<Int> = null) {
+	public function new(memory:Array<Float>, input:Array<Int> = null) {
 		this.memory = memory;
 		this.input = input == null ? [0] : input;
 	}
@@ -53,6 +56,8 @@ class IntCodeMachine {
 				LessThan;
 			case 8:
 				Equals;
+			case 9:
+				RBase;
 			case 99:
 				Halt;
 			default:
@@ -76,26 +81,44 @@ class IntCodeMachine {
 		return at(pc++);
 	}
 
-	inline function write(value:Int, address:Int) {
-		memory[address] = value;
+	inline function write(value:Float, address:Float) {
+		while (memory.length < address + 1) {
+			memory.push(0);
+		}
+		memory[Std.int(address)] = value;
 	}
 
 	inline function halt() {
 		stopped = true;
 	}
 
-	inline function get(value:Int, mode:Mode):Int {
+	inline function get(value:Float, mode:Mode):Float {
 		return switch (mode) {
 			case Immediate: value;
+			case Relative: at(value + relative);
 			default: at(value);
 		}
 	}
 
-	public inline function at(address:Int):Int {
-		return memory[address];
+	inline function set(value:Float, address:Float, mode:Mode) {
+		switch (mode) {
+			case Immediate:
+				throw 'no!';
+			case Position:
+				write(value, address);
+			case Relative:
+				write(value, address + relative);
+		}
 	}
 
-	public inline function out(value:Int) {
+	public inline function at(address:Float) {
+		while (memory.length < address + 1) {
+			memory.push(0);
+		}
+		return memory[Std.int(address)];
+	}
+
+	public inline function out(value:Float) {
 		output.push(value);
 	}
 
@@ -121,45 +144,42 @@ class IntCodeMachine {
 		var opcode = nextOpCode();
 		switch (opcode.code) {
 			case Add:
-				final a:Int = get(next(), opcode.modes[0]);
-				final b:Int = get(next(), opcode.modes[1]);
-				final c:Int = next();
-				write(a + b, c);
+				final a = get(next(), opcode.modes[0]);
+				final b = get(next(), opcode.modes[1]);
+				set(a + b, next(), opcode.modes[2]);
 			case Multiply:
-				final a:Int = get(next(), opcode.modes[0]);
-				final b:Int = get(next(), opcode.modes[1]);
-				final c:Int = next();
-				write(a * b, c);
+				final a = get(next(), opcode.modes[0]);
+				final b = get(next(), opcode.modes[1]);
+				set(a * b, next(), opcode.modes[2]);
 			case Input:
-				final a = next();
-				write(input.shift(), a);
+				set(input.shift(), next(), opcode.modes[0]);
 			case Output:
 				final a = get(next(), opcode.modes[0]);
 				out(a);
 			case JumpIfTrue:
 				final a = get(next(), opcode.modes[0]);
 				if (a > 0) {
-					pc = get(next(), opcode.modes[1]);
+					pc = Std.int(get(next(), opcode.modes[1]));
 				} else {
 					pc++;
 				}
 			case JumpIfFalse:
 				final a = get(next(), opcode.modes[0]);
 				if (a == 0) {
-					pc = get(next(), opcode.modes[1]);
+					pc = Std.int(get(next(), opcode.modes[1]));
 				} else {
 					pc++;
 				}
 			case LessThan:
-				final a:Int = get(next(), opcode.modes[0]);
-				final b:Int = get(next(), opcode.modes[1]);
-				final c:Int = next();
-				write(a < b ? 1 : 0, c);
+				final a = get(next(), opcode.modes[0]);
+				final b = get(next(), opcode.modes[1]);
+				set(a < b ? 1 : 0, next(), opcode.modes[2]);
 			case Equals:
-				final a:Int = get(next(), opcode.modes[0]);
-				final b:Int = get(next(), opcode.modes[1]);
-				final c:Int = next();
-				write(a == b ? 1 : 0, c);
+				final a = get(next(), opcode.modes[0]);
+				final b = get(next(), opcode.modes[1]);
+				set(a == b ? 1 : 0, next(), opcode.modes[2]);
+			case RBase:
+				relative += get(next(), opcode.modes[0]);
 			case Halt:
 				halt();
 			case Invalid:

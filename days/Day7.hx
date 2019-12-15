@@ -3,6 +3,8 @@ package days;
 import shared.IntCodeMachine;
 import sys.io.File;
 
+using StringTools;
+
 class Day7 {
 	public static function run() {
 		Sys.println("Advent of Code 2019: Day7");
@@ -10,11 +12,11 @@ class Day7 {
 		Sys.println("Part2: " + part2());
 	}
 
-	static function getData():Array<Int> {
+	static function getData() {
 		return File.getContent("./data/day7.txt")
 			.split(',')
-			.map(Std.parseInt)
-			.filter(x -> x != null);
+			.filter(x -> x.trim() != '')
+			.map(Std.parseFloat);
 	}
 
 	// heaps algorithm
@@ -52,7 +54,7 @@ class Day7 {
 			for (input in c) {
 				var machine = new IntCodeMachine(data, [input, output]);
 				machine.run();
-				output = machine.output[0];
+				output = Std.int(machine.output[0]);
 			}
 			if (output > max) {
 				max = output;
@@ -77,7 +79,7 @@ class Day7 {
 					if (o == null) {
 						running = false;
 					} else {
-						output = o;
+						output = Std.int(o);
 					}
 				}
 			}

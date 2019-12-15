@@ -5,15 +5,15 @@ import sys.io.File;
 
 using StringTools;
 
-class Day5 {
+class Day9 {
 	public static function run() {
-		Sys.println("Advent of Code 2019: Day5");
+		Sys.println("Advent of Code 2019: Day9");
 		Sys.println("Part1: " + part1());
 		Sys.println("Part2: " + part2());
 	}
 
-	static function getData() {
-		return File.getContent("./data/day5.txt")
+	static function getData():Array<Float> {
+		return File.getContent("./data/day9.txt")
 			.split(',')
 			.filter(x -> x.trim() != '')
 			.map(Std.parseFloat);
@@ -23,13 +23,13 @@ class Day5 {
 		var data = getData();
 		var machine = new IntCodeMachine(data, [1]);
 		machine.run();
-		return machine.output[machine.output.length - 1];
+		return machine.output[0];
 	}
 
 	static function part2() {
 		var data = getData();
-		var machine = new IntCodeMachine(data, [5]);
+		var machine = new IntCodeMachine(data, [2]);
 		machine.run();
-		return machine.output[machine.output.length - 1];
+		return machine.output[0];
 	}
 }

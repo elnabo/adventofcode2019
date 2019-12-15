@@ -3,6 +3,8 @@ package days;
 import shared.IntCodeMachine;
 import sys.io.File;
 
+using StringTools;
+
 class Day2 {
 	public static function run() {
 		Sys.println("Advent of Code 2019: Day2");
@@ -10,11 +12,11 @@ class Day2 {
 		Sys.println("Part2: " + part2());
 	}
 
-	static function getData():Array<Int> {
+	static function getData():Array<Float> {
 		return File.getContent("./data/day2.txt")
 			.split(',')
-			.map(Std.parseInt)
-			.filter(x -> x != null);
+			.filter(x -> x.trim() != '')
+			.map(Std.parseFloat);
 	}
 
 	static function part1() {
