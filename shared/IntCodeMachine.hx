@@ -34,9 +34,9 @@ class IntCodeMachine {
 	public function new(memory:Array<Float>, input:Array<Int> = null) {
 		this.memory = memory;
 		if (input == null) {
-			trace('warning check input defaulting to [0]');
+			throw 'behaviour changed pass [0] for the input parameter';
 		}
-		this.input = input == null ? [0] : input;
+		this.input = input;
 	}
 
 	function nextOpCode():OpCode {
@@ -131,12 +131,22 @@ class IntCodeMachine {
 		}
 	}
 
-	public function waitOutput() {
+	public function feed(i:Int) {
+		input.push(i);
+	}
+
+	public function waitOutput(count:Int = 1) {
 		var length = output.length;
-		while (!stopped && output.length == length) {
+		while (!stopped && output.length != length + count) {
 			step();
 		}
 		return output.length > length ? output[length] : null;
+	}
+
+	public function readOutput() {
+		var r = output;
+		output = [];
+		return r;
 	}
 
 	public function step() {
