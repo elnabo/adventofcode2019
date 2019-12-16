@@ -39,6 +39,10 @@ class IntCodeMachine {
 		this.input = input;
 	}
 
+	public inline function copyMemory() {
+		return memory.copy();
+	}
+
 	function nextOpCode():OpCode {
 		var ABCDE = next();
 		var DE = ABCDE % 100;
